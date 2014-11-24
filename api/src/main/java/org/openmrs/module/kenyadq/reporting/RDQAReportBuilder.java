@@ -38,6 +38,7 @@ import org.openmrs.module.kenyadq.converter.ObsValueNumericConverter;
 import org.openmrs.module.kenyadq.converter.PatientProgramEnrollmentConverter;
 import org.openmrs.module.kenyadq.converter.PatientProgramEnrollmentDateConverter;
 import org.openmrs.module.kenyadq.converter.RDQACalculationResultConverter;
+import org.openmrs.module.kenyadq.converter.RegimenConverter;
 import org.openmrs.module.kenyadq.converter.WHOStageDataConverter;
 import org.openmrs.module.kenyadq.reporting.cohort.definition.RDQACohortDefinition;
 import org.openmrs.module.kenyaemr.Dictionary;
@@ -92,21 +93,19 @@ public class RDQAReportBuilder extends AbstractCohortReportBuilder {
 		DataDefinition nameDef = new ConvertedPersonDataDefinition("name", new PreferredNameDataDefinition(), nameFormatter);
 
 		dsd.addColumn("id", new PersonIdDataDefinition(), "");
-		dsd.addColumn("Unique Patient No", identifierDef, "");
 		dsd.addColumn("Name", nameDef, "");
-        dsd.addColumn("Sex", new GenderDataDefinition(), "");
-		dsd.addColumn("Date of Birth", new BirthdateDataDefinition(), "", new BirthdateConverter(DATE_FORMAT));
+		dsd.addColumn("Unique Patient No", identifierDef, "");
 		dsd.addColumn("Enrollment into Program", new CalculationDataDefinition("Enrollment into Program", new PatientProgramEnrollmentCalculation()), "", new PatientProgramEnrollmentConverter());
 		dsd.addColumn("Enrollment Date", new CalculationDataDefinition("Enrollment Date", new PatientProgramEnrollmentCalculation()), "", new PatientProgramEnrollmentDateConverter());
+		dsd.addColumn("Entry Point", new ObsForPersonDataDefinition("Entry Point", TimeQualifier.LAST, Dictionary.getConcept(Dictionary.METHOD_OF_ENROLLMENT), null, null), "", new ConceptNamesDataConverter());
+		/*dsd.addColumn("CD4 at Art Start", new CalculationDataDefinition("CD4 at Art Start", new CD4AtArtStartDateCalculation()), "", new RDQACalculationResultConverter());*/
+        dsd.addColumn("Sex", new GenderDataDefinition(), "");
+		dsd.addColumn("Date of Birth", new BirthdateDataDefinition(), "", new BirthdateConverter(DATE_FORMAT));
+
 
 		dsd.addColumn("Art Start Date", new CalculationDataDefinition("Art Start Date", new InitialArtStartDateCalculation()), "", new RDQACalculationResultConverter());
-		dsd.addColumn("Entry Point", new ObsForPersonDataDefinition("Entry Point", TimeQualifier.LAST, Dictionary.getConcept(Dictionary.METHOD_OF_ENROLLMENT), null, null), "", new ConceptNamesDataConverter());
-		dsd.addColumn("CD4 at Art Start", new CalculationDataDefinition("CD4 at Art Start", new CD4AtArtStartDateCalculation()), "", new RDQACalculationResultConverter());
 		dsd.addColumn("Weight at Art Start", new CalculationDataDefinition("Weight at Art Start", new WeightAtArtStartDateCalculation()), "", new RDQACalculationResultConverter());
-		dsd.addColumn("Current Regimen", new CalculationDataDefinition("Current Regimen", new CurrentArtRegimenCalculation()), "", new RDQACalculationResultConverter());
-		dsd.addColumn("Transfer In Date", new CalculationDataDefinition("Transfer In Date", new TransferInDateCalculation()), "", new RDQACalculationResultConverter());
-		dsd.addColumn("Transfer Out Date", new CalculationDataDefinition("Transfer Out Date", new TransferOutDateCalculation()), "", new RDQACalculationResultConverter());
-		dsd.addColumn("Date of Death", new CalculationDataDefinition("Date of Death", new DateOfDeathCalculation()), "", new RDQACalculationResultConverter());
+
 		dsd.addColumn("First CD4 Count", new ObsForPersonDataDefinition("First CD4 Count", TimeQualifier.FIRST, Dictionary.getConcept(Dictionary.CD4_COUNT), null, null), "", new ObsValueNumericConverter(1));
 		dsd.addColumn("First CD4 Count Date", new ObsForPersonDataDefinition("First CD4 Count Date", TimeQualifier.FIRST, Dictionary.getConcept(Dictionary.CD4_COUNT), null, null), "", new ObsDatetimeConverter());
 		dsd.addColumn("Last CD4 Count", new ObsForPersonDataDefinition("Last CD4 Count", TimeQualifier.LAST, Dictionary.getConcept(Dictionary.CD4_COUNT), null, null), "", new ObsValueNumericConverter(1));
@@ -116,6 +115,12 @@ public class RDQAReportBuilder extends AbstractCohortReportBuilder {
 		dsd.addColumn("First WHO Stage Date", new ObsForPersonDataDefinition("First WHO Stage Date", TimeQualifier.FIRST, Dictionary.getConcept(Dictionary.CURRENT_WHO_STAGE), null, null), "", new ObsDatetimeConverter());
 		dsd.addColumn("Last WHO Stage", new ObsForPersonDataDefinition("Last WHO Stage", TimeQualifier.LAST, Dictionary.getConcept(Dictionary.CURRENT_WHO_STAGE), null, null), "", new WHOStageDataConverter());
 		dsd.addColumn("Last WHO Stage Date", new ObsForPersonDataDefinition("Last WHO Stage Date", TimeQualifier.LAST, Dictionary.getConcept(Dictionary.CURRENT_WHO_STAGE), null, null), "", new ObsDatetimeConverter());
+
+		dsd.addColumn("Current Regimen", new CalculationDataDefinition("Current Regimen", new CurrentArtRegimenCalculation()), "", new RegimenConverter());
+
+		dsd.addColumn("Transfer In Date", new CalculationDataDefinition("Transfer In Date", new TransferInDateCalculation()), "", new RDQACalculationResultConverter());
+		dsd.addColumn("Transfer Out Date", new CalculationDataDefinition("Transfer Out Date", new TransferOutDateCalculation()), "", new RDQACalculationResultConverter());
+		dsd.addColumn("Date of Death", new CalculationDataDefinition("Date of Death", new DateOfDeathCalculation()), "", new RDQACalculationResultConverter());
 
 		dsd.addColumn("CTX/Dapsone last, documentation date", new CalculationDataDefinition("CTX/Dapsone last, documentation date", new DateOfLastCTXCalculation()), "", new RDQACalculationResultConverter());
 		dsd.addColumn("Last encounter date in the blue card", new CalculationDataDefinition("Last Encounter Date", new PatientLastEncounterDateCalculation()), "", new RDQACalculationResultConverter());

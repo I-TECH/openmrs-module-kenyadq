@@ -27,6 +27,9 @@ import org.openmrs.calculation.patient.PatientCalculationContext;
 import org.openmrs.calculation.result.CalculationResultMap;
 import org.openmrs.calculation.result.SimpleResult;
 import org.openmrs.module.kenyacore.calculation.AbstractPatientCalculation;
+import org.openmrs.module.kenyacore.calculation.Calculations;
+import org.openmrs.module.kenyaemr.Dictionary;
+import org.openmrs.module.kenyaemr.calculation.EmrCalculationUtils;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -40,46 +43,34 @@ import java.util.Map;
  */
 public class DateOfLastCTXCalculation extends AbstractPatientCalculation {
 
-	Concept ctxConcept = Context.getConceptService().getConceptByUuid("162229AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
-	Concept yes = Context.getConceptService().getConceptByUuid("1065AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
-	Concept medicationOrder = Context.getConceptService().getConceptByUuid("1282AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
-	Concept sulphurCtx = Context.getConceptService().getConceptByUuid("105281AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
-
 	@Override
 	public CalculationResultMap evaluate(Collection<Integer> cohort, Map<String, Object> parameterValues, PatientCalculationContext context) {
 
-		VisitService service = Context.getVisitService();
-		PatientService patientService = Context.getPatientService();
-		EncounterService encounterService = Context.getEncounterService();
-		ObsService obsService = Context.getObsService();
+		CalculationResultMap medOrders = Calculations.lastObs(Dictionary.getConcept(Dictionary.MEDICATION_ORDERS), cohort, context);
+
+		CalculationResultMap ctxProphylaxisDispenced = Calculations.lastObs(Dictionary.getConcept(Dictionary.COTRIMOXAZOLE_DISPENSED), cohort, context);
+
+		/////////////////////////////////////////////////////////////////////////////////////////////
+		// Get concepts...
+		Concept yes = Dictionary.getConcept(Dictionary.YES);
+		Concept dapsone = Dictionary.getConcept(Dictionary.DAPSONE);
+		Concept ctx = Dictionary.getConcept(Dictionary.SULFAMETHOXAZOLE_TRIMETHOPRIM);
+		///////////////////////////////////////////////////////////////////////////////////////////
 
 		CalculationResultMap ret = new CalculationResultMap();
 
-		for (Integer ptid : cohort) {
+		for (Integer ptId : cohort) {
 			Date lastCtx = null;
-			Patient patient = patientService.getPatient(ptid);
-			List<Visit> pVisits = service.getVisitsByPatient(patient);
-			if (pVisits.size() > 0) {
-
-				Integer listSize = pVisits.size();
-				List<Visit> requiredVisits = listSize <= 4? pVisits : pVisits.subList(listSize - 4, listSize-1);
-				//reverse elements in the list
-				Collections.reverse(requiredVisits);
-
-				for (Visit v : requiredVisits) {
-					List<Encounter> encounters = encounterService.getEncountersByVisit(v, false);
-					if (encounters.size() > 0) {
-						List<Obs> obsList = obsService.getObservations(Arrays.asList(Context.getPersonService().getPerson(ptid)), encounters, Arrays.asList(ctxConcept, medicationOrder), Arrays.asList(yes, sulphurCtx), null, null, null, null, null, null, null, false);
-
-						if (obsList.size() > 0) {
-							Collections.reverse(obsList);
-							lastCtx = obsList.get(0).getObsDatetime();
-							break;
-						}
-					}
-				}
+			Obs  medOrdersObs= EmrCalculationUtils.obsResultForPatient(medOrders, ptId);
+			Obs  ctxProphylaxisDispencedObs= EmrCalculationUtils.obsResultForPatient(ctxProphylaxisDispenced, ptId);
+			if(ctxProphylaxisDispencedObs != null && ctxProphylaxisDispencedObs.getValueCoded().equals(yes)) {
+				lastCtx = ctxProphylaxisDispencedObs.getObsDatetime();
 			}
-			ret.put(ptid, new SimpleResult(lastCtx, this));
+			if((medOrdersObs != null && medOrdersObs.getValueCoded().equals(ctx)) || (medOrdersObs != null && medOrdersObs.getValueCoded().equals(dapsone))) {
+				lastCtx = medOrdersObs.getObsDatetime();
+			}
+
+			ret.put(ptId, new SimpleResult(lastCtx, this));
 
 		}
 

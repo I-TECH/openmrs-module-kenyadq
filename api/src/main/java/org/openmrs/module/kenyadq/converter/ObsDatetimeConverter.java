@@ -15,7 +15,7 @@ public class ObsDatetimeConverter implements DataConverter {
 		Obs o = (Obs) original;
 
 		if (o == null)
-			return null;
+			return "Missing";
 
 		return RDQAReportUtils.formatdates(o.getObsDatetime(), RDQAReportUtils.DATE_FORMAT);
 	}

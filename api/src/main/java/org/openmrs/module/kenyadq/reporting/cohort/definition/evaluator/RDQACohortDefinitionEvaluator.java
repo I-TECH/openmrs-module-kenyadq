@@ -39,12 +39,6 @@ public class RDQACohortDefinitionEvaluator implements CohortDefinitionEvaluator 
 
 		Cohort newCohort = new Cohort();
 
-		/*String qry = "select FLOOR(1 + (RAND() * 999999)) as index_no, patient_id " +
-				" from patient p " +
-				"	inner join patient_identifier pi " +
-				"	using(patient_id) " +
-				" where identifier_type = 3 and p.voided = 0  ";*/
-
 		String qry = "select FLOOR(1 + (RAND() * 999999)) as index_no, patient_id " +
 				" from patient p " +
 				"	inner join patient_identifier pi " +

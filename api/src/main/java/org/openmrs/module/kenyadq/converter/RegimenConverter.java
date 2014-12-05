@@ -96,7 +96,7 @@ public class RegimenConverter implements DataConverter {
 		listMap.put("TDF+3TC+LPV/r", Arrays.asList("TENOFOVIR","LAMIVUDINE", "LOPINAVIR", "RITONAVIR" ));
 		listMap.put("TDF+ABC+LPV/r", Arrays.asList("TENOFOVIR","ABACAVIR", "LOPINAVIR", "RITONAVIR" ));
 		listMap.put("TDF+3TC+ATV/r", Arrays.asList("TENOFOVIR","LAMIVUDINE", "ATAZANAVIR", "RITONAVIR" ));
-		listMap.put("ABC+ddI+LPV/r", Arrays.asList("ABACAVIR","Didanosine", "LOPINAVIR", "RITONAVIR" ));
+		listMap.put("ABC+ddI+LPV/r", Arrays.asList("ABACAVIR","DIDANOSINE", "LOPINAVIR", "RITONAVIR" ));
 		listMap.put("d4T+3TC+LPV/r", Arrays.asList("STAVUDINE","LAMIVUDINE", "LOPINAVIR", "RITONAVIR" ));
 
 		listMap.put("ABC+3TC+NVP", Arrays.asList("ABACAVIR","LAMIVUDINE", "NEVIRAPINE" ));
@@ -104,7 +104,7 @@ public class RegimenConverter implements DataConverter {
 		listMap.put("ABC+3TC+AZT", Arrays.asList("ABACAVIR","LAMIVUDINE", "ZIDOVUDINE" ));
 
 		listMap.put("ABC+3TC+LPV/r", Arrays.asList("ABACAVIR","LAMIVUDINE", "LOPINAVIR", "RITONAVIR" ));
-		listMap.put("ABC+ddI+LPV/r", Arrays.asList("ABACAVIR","Didanosine", "LOPINAVIR", "RITONAVIR" ));
+		listMap.put("ABC+ddI+LPV/r", Arrays.asList("ABACAVIR","DIDANOSINE", "LOPINAVIR", "RITONAVIR" ));
 
 		return listMap;
 

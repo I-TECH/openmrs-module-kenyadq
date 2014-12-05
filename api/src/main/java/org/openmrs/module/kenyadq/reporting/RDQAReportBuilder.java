@@ -23,18 +23,17 @@ import org.openmrs.module.kenyacore.report.ReportUtils;
 import org.openmrs.module.kenyacore.report.builder.AbstractCohortReportBuilder;
 import org.openmrs.module.kenyacore.report.builder.Builds;
 import org.openmrs.module.kenyacore.report.data.patient.definition.CalculationDataDefinition;
-import org.openmrs.module.kenyadq.calculation.rdqa.CD4AtArtStartDateCalculation;
 import org.openmrs.module.kenyadq.calculation.rdqa.DateOfDeathCalculation;
 import org.openmrs.module.kenyadq.calculation.rdqa.DateOfLastCTXCalculation;
 import org.openmrs.module.kenyadq.calculation.rdqa.PatientCheckOutStatusCalculation;
-import org.openmrs.module.kenyadq.calculation.rdqa.PatientLastEncounterDateCalculation;
 import org.openmrs.module.kenyadq.calculation.rdqa.PatientProgramEnrollmentCalculation;
 import org.openmrs.module.kenyadq.calculation.rdqa.ValueAtDateOfOtherPatientCalculationCalculation;
 import org.openmrs.module.kenyadq.calculation.rdqa.VisitsForAPatientCalculation;
 import org.openmrs.module.kenyadq.calculation.rdqa.WeightAtArtStartDateCalculation;
-import org.openmrs.module.kenyadq.converter.ConceptNamesDataConverter;
+import org.openmrs.module.kenyadq.converter.CustomDateConverter;
 import org.openmrs.module.kenyadq.converter.DateArtStartDateConverter;
 import org.openmrs.module.kenyadq.converter.EncounterDatetimeConverter;
+import org.openmrs.module.kenyadq.converter.GenderConverter;
 import org.openmrs.module.kenyadq.converter.ObsDatetimeConverter;
 import org.openmrs.module.kenyadq.converter.ObsValueDatetimeConverter;
 import org.openmrs.module.kenyadq.converter.ObsValueNumericConverter;
@@ -44,6 +43,7 @@ import org.openmrs.module.kenyadq.converter.PatientProgramEnrollmentDateConverte
 import org.openmrs.module.kenyadq.converter.RDQACalculationResultConverter;
 import org.openmrs.module.kenyadq.converter.RegimenConverter;
 import org.openmrs.module.kenyadq.converter.WHOStageDataConverter;
+import org.openmrs.module.kenyadq.converter.WeightConverter;
 import org.openmrs.module.kenyadq.reporting.cohort.definition.RDQACohortDefinition;
 import org.openmrs.module.kenyaemr.Dictionary;
 import org.openmrs.module.kenyaemr.calculation.library.hiv.art.CurrentArtRegimenCalculation;
@@ -78,7 +78,7 @@ import java.util.List;
 @Component
 @Builds({"kenyadq.common.report.rdqaReport"})
 public class RDQAReportBuilder extends AbstractCohortReportBuilder {
-	public static final String DATE_FORMAT = "dd-MM-yyyy";
+	public static final String DATE_FORMAT = "dd/MM/yyyy";
 
 	/**
 	 *
@@ -108,12 +108,12 @@ public class RDQAReportBuilder extends AbstractCohortReportBuilder {
 		dsd.addColumn("Enrollment Date", new CalculationDataDefinition("Enrollment Date", new PatientProgramEnrollmentCalculation()), "", new PatientProgramEnrollmentDateConverter());
 		dsd.addColumn("Entry Point", new ObsForPersonDataDefinition("Entry Point", TimeQualifier.LAST, Dictionary.getConcept(Dictionary.METHOD_OF_ENROLLMENT), null, null), "", new PatientEntryPointDataConverter());
 		/*dsd.addColumn("CD4 at Art Start", new CalculationDataDefinition("CD4 at Art Start", new CD4AtArtStartDateCalculation()), "", new RDQACalculationResultConverter());*/
-        dsd.addColumn("Sex", new GenderDataDefinition(), "");
+        dsd.addColumn("Sex", new GenderDataDefinition(), "", new GenderConverter());
 		dsd.addColumn("Date of Birth", new BirthdateDataDefinition(), "", new BirthdateConverter(DATE_FORMAT));
 
 
 		dsd.addColumn("Art Start Date", new CalculationDataDefinition("Art Start Date", new InitialArtStartDateCalculation()), "", new DateArtStartDateConverter());
-		dsd.addColumn("Weight at Art Start", new CalculationDataDefinition("Weight at Art Start", new WeightAtArtStartDateCalculation()), "", new RDQACalculationResultConverter());
+		dsd.addColumn("Weight at Art Start", new CalculationDataDefinition("Weight at Art Start", new WeightAtArtStartDateCalculation()), "", new WeightConverter());
 
 		dsd.addColumn("First CD4 Count", new ObsForPersonDataDefinition("First CD4 Count", TimeQualifier.FIRST, Dictionary.getConcept(Dictionary.CD4_COUNT), null, null), "", new ObsValueNumericConverter(1));
 		dsd.addColumn("First CD4 Count Date", new ObsForPersonDataDefinition("First CD4 Count Date", TimeQualifier.FIRST, Dictionary.getConcept(Dictionary.CD4_COUNT), null, null), "", new ObsDatetimeConverter());
@@ -127,9 +127,9 @@ public class RDQAReportBuilder extends AbstractCohortReportBuilder {
 
 		dsd.addColumn("Current Regimen", new CalculationDataDefinition("Current Regimen", new CurrentArtRegimenCalculation()), "", new RegimenConverter());
 
-		dsd.addColumn("Transfer In Date", new CalculationDataDefinition("Transfer In Date", new TransferInDateCalculation()), "", new RDQACalculationResultConverter());
-		dsd.addColumn("Transfer Out Date", new CalculationDataDefinition("Transfer Out Date", new TransferOutDateCalculation()), "", new RDQACalculationResultConverter());
-		dsd.addColumn("Date of Death", new CalculationDataDefinition("Date of Death", new DateOfDeathCalculation()), "", new RDQACalculationResultConverter());
+		dsd.addColumn("Transfer In Date", new CalculationDataDefinition("Transfer In Date", new TransferInDateCalculation()), "", new CustomDateConverter());
+		dsd.addColumn("Transfer Out Date", new CalculationDataDefinition("Transfer Out Date", new TransferOutDateCalculation()), "", new CustomDateConverter());
+		dsd.addColumn("Date of Death", new CalculationDataDefinition("Date of Death", new DateOfDeathCalculation()), "", new CustomDateConverter());
 
 		dsd.addColumn("CTX/Dapsone last, documentation date", new CalculationDataDefinition("CTX/Dapsone last, documentation date", new DateOfLastCTXCalculation()), "", new RDQACalculationResultConverter());
 
@@ -141,9 +141,9 @@ public class RDQAReportBuilder extends AbstractCohortReportBuilder {
 
 		definition.setWhich(TimeQualifier.LAST);
 		definition.setTypes(encounterTypes);
-		dsd.addColumn("Last encounter ||||", definition, "", new EncounterDatetimeConverter());
+		dsd.addColumn("Last encounter date in the blue card", definition, "", new EncounterDatetimeConverter());
 
-		dsd.addColumn("Last encounter date in the blue card", new CalculationDataDefinition("Last Encounter Date", new PatientLastEncounterDateCalculation()), "", new RDQACalculationResultConverter());
+		//dsd.addColumn("Last encounter date in the blue card", new CalculationDataDefinition("Last Encounter Date", new PatientLastEncounterDateCalculation()), "", new RDQACalculationResultConverter());
 		dsd.addColumn("Next Appointment Date", new ObsForPersonDataDefinition("Next Appointment Date", TimeQualifier.LAST, Dictionary.getConcept(Dictionary.RETURN_VISIT_DATE), null, null), "", new ObsValueDatetimeConverter());
 		dsd.addColumn("Number of visits in paper bluecards", new CalculationDataDefinition("Total Visits", new VisitsForAPatientCalculation()), "", new DataConverter() {
 			@Override

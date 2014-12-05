@@ -28,12 +28,12 @@ public class WHOStageDataConverter implements DataConverter {
 		Obs o = (Obs) original;
 
 		if (o == null)
-			return "";
+			return "Missing";
 
 		Concept answer = o.getValueCoded();
 
 		if (answer == null)
-			return "";
+			return "Missing";
 
 		String value;
 
@@ -46,7 +46,7 @@ public class WHOStageDataConverter implements DataConverter {
 		} else if (answer.getId() ==1207 || answer.getId() == 1223) {
 			value = "IV";
 		} else {
-			value = "";
+			value = "Missing";
 		}
 
 		return value;

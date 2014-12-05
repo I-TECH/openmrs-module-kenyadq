@@ -1,28 +1,26 @@
 package org.openmrs.module.kenyadq.converter;
 
-import org.openmrs.Obs;
+import org.openmrs.Encounter;
 import org.openmrs.module.kenyadq.utils.RDQAReportUtils;
 import org.openmrs.module.reporting.data.converter.DataConverter;
 
-import java.util.Date;
-
 /**
- * Converter to get obsDatetime from an observation
+ * Converter to get obsDatetime from an encounter
  */
-public class ObsDatetimeConverter implements DataConverter {
+public class EncounterDatetimeConverter implements DataConverter {
 	@Override
 	public Object convert(Object original) {
-		Obs o = (Obs) original;
+		Encounter e = (Encounter) original;
 
-		if (o == null)
-			return "Missing";
+		if (e == null)
+			return null;
 
-		return RDQAReportUtils.formatdates(o.getObsDatetime(), RDQAReportUtils.DATE_FORMAT);
+		return RDQAReportUtils.formatdates(e.getEncounterDatetime(), RDQAReportUtils.DATE_FORMAT);
 	}
 
 	@Override
 	public Class<?> getInputDataType() {
-		return Obs.class;
+		return Encounter.class;
 	}
 
 	@Override

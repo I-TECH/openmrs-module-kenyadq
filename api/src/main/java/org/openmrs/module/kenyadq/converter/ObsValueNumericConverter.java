@@ -37,10 +37,10 @@ public class ObsValueNumericConverter implements DataConverter {
 		Obs o = (Obs) original;
 
 		if (o == null)
-			return "";
+			return "Missing";
 
 		if (o.getValueNumeric() == null)
-			return "";
+			return "Missing";
 
 
 		ConceptNumeric cn;
@@ -51,7 +51,7 @@ public class ObsValueNumericConverter implements DataConverter {
 		}
 
 		if (cn == null)
-			return "";
+			return "Missing";
 
 		String units = cn.getUnits();
 

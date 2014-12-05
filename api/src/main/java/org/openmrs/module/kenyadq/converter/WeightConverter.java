@@ -14,41 +14,22 @@
 
 package org.openmrs.module.kenyadq.converter;
 
-import org.openmrs.Concept;
 import org.openmrs.calculation.result.CalculationResult;
-import org.openmrs.module.kenyadq.utils.RDQAReportUtils;
 import org.openmrs.module.reporting.data.converter.DataConverter;
 
-import java.util.Date;
-
-public class RDQACalculationResultConverter implements DataConverter{
+public class WeightConverter implements DataConverter{
 	@Override
 	public Object convert(Object obj) {
 
 		if (obj == null) {
-			return null;
+			return "Missing";
 		}
 
 		Object value = ((CalculationResult) obj).getValue();
-
-		if (value instanceof Boolean) {
-			return (Boolean) value ? "Yes" : "No";
+		if (value == null){
+			return "Missing";
 		}
-		else if (value instanceof Date) {
-			return RDQAReportUtils.formatdates((Date)value, "dd/MM/yyyy");
-		}
-		else if (value instanceof Concept) {
-
-			return ((Concept) value).getName();
-		}
-		else if (value instanceof String) {
-			return value;
-		}
-		else if (value instanceof Double) {
-			return value;
-		}
-
-		return null;
+		return value;
 	}
 
 	@Override

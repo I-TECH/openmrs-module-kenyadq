@@ -1,6 +1,6 @@
 package org.openmrs.module.kenyadq.converter;
 
-import org.openmrs.Obs;
+import org.openmrs.calculation.result.CalculationResult;
 import org.openmrs.module.kenyadq.utils.RDQAReportUtils;
 import org.openmrs.module.reporting.data.converter.DataConverter;
 
@@ -9,20 +9,23 @@ import java.util.Date;
 /**
  * Converter to get obsDatetime from an observation
  */
-public class ObsDatetimeConverter implements DataConverter {
+public class DateArtStartDateConverter implements DataConverter {
 	@Override
 	public Object convert(Object original) {
-		Obs o = (Obs) original;
+		if (original == null)
+			return "N/A";
 
-		if (o == null)
-			return "Missing";
+		Object value = ((CalculationResult) original).getValue();
 
-		return RDQAReportUtils.formatdates(o.getObsDatetime(), RDQAReportUtils.DATE_FORMAT);
+		if (value == null)
+			return "N/A";
+
+		return RDQAReportUtils.formatdates((Date)value, RDQAReportUtils.DATE_FORMAT);
 	}
 
 	@Override
 	public Class<?> getInputDataType() {
-		return Obs.class;
+		return CalculationResult.class;
 	}
 
 	@Override

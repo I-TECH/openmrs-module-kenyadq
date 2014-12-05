@@ -25,10 +25,19 @@ public class PatientProgramEnrollmentDateConverter implements DataConverter {
 
 		List<PatientProgram> result = (List<PatientProgram>)baseResult.getValue();
 
-		if (result.size() == 1)
-			return RDQAReportUtils.formatdates(result.get(0).getDateEnrolled(), RDQAReportUtils.DATE_FORMAT);
+		if (result.size() == 0)
+			return null;
 
-		return RDQAReportUtils.formatdates(hasHivProgram(result), RDQAReportUtils.DATE_FORMAT);
+		if (result.size() == 1) {
+			Date date = result.get(0).getDateEnrolled();
+			if (date != null)
+				return RDQAReportUtils.formatdates(result.get(0).getDateEnrolled(), RDQAReportUtils.DATE_FORMAT);
+		}
+
+		Date dateEnrolled = findHIVProgramAndReturnDate(result);
+		if (dateEnrolled != null)
+			return RDQAReportUtils.formatdates(findHIVProgramAndReturnDate(result), RDQAReportUtils.DATE_FORMAT);
+		return null;
 	}
 
 	@Override
@@ -41,17 +50,19 @@ public class PatientProgramEnrollmentDateConverter implements DataConverter {
 		return String.class;
 	}
 
-	private Date hasHivProgram(List<PatientProgram> enrolledPrograms){
+	private Date findHIVProgramAndReturnDate(List<PatientProgram> enrolledPrograms){
 
 		Date enrollmentDate = null;
-		for (PatientProgram p : enrolledPrograms){
+		for (PatientProgram p : enrolledPrograms) {
 			if (p.getProgram().getUuid().equals(HIV)) {
 				enrollmentDate = p.getDateEnrolled();
 				break;
 			}
-		if (enrollmentDate.equals(null))
-			enrollmentDate = enrolledPrograms.get(0).getDateEnrolled();
 		}
+
+		if (enrollmentDate == null)
+			enrollmentDate = enrolledPrograms.get(0).getDateEnrolled();
+
 		return enrollmentDate;
 	}
 }

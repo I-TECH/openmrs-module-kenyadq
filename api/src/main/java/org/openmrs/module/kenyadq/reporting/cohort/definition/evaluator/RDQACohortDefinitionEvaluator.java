@@ -43,7 +43,7 @@ public class RDQACohortDefinitionEvaluator implements CohortDefinitionEvaluator 
 				" from patient p " +
 				"	inner join patient_identifier pi " +
 				"	using(patient_id) " +
-				" where identifier_type = 3  ";
+				" where identifier_type = 3 and p.voided = 0  ";
 
 		Map<String, Object> m = new HashMap<String, Object>();
 		TreeMap<Double, Integer> dataMapFromSQL = (TreeMap<Double, Integer>) makePatientDataMapFromSQL(qry, m);

@@ -2,20 +2,16 @@ package org.openmrs.module.kenyadq.converter;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.openmrs.Concept;
-import org.openmrs.Obs;
-import org.openmrs.api.ConceptService;
-import org.openmrs.api.context.Context;
 import org.openmrs.module.reporting.data.converter.DataConverter;
 
 /**
- * Returns concept names
+ * Returns a longer version of gender i.e Male for M and Female for F
  */
-public class ConceptNamesDataConverter implements DataConverter {
+public class GenderConverter implements DataConverter {
 
 	private Log log = LogFactory.getLog(getClass());
 
-	public ConceptNamesDataConverter() {}
+	public GenderConverter() {}
 
 	/**
 	 * @should return a blank string if valueNumeric is null
@@ -23,23 +19,21 @@ public class ConceptNamesDataConverter implements DataConverter {
 	@Override
 	public Object convert(Object original) {
 
-		Obs o = (Obs) original;
+		String o = (String) original;
 
 		if (o == null)
-			return "";
+			return "Missing";
 
-		Concept answer = o.getValueCoded();
-
-		if (answer == null)
-			return "";
-
-		//return answer.getName().getName();
-		return answer.getName().getShortName();
+		if (o.equals("M")){
+			return "Male";
+		} else {
+			return "Female";
+		}
 	}
 
 	@Override
 	public Class<?> getInputDataType() {
-		return Obs.class;
+		return String.class;
 	}
 
 	@Override

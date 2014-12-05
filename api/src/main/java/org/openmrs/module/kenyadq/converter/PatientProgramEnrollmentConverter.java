@@ -6,7 +6,9 @@ import org.openmrs.calculation.result.SimpleResult;
 import org.openmrs.module.reporting.data.converter.DataConverter;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Returns a list of programs a patient is enrolled and the dates of enrollment
@@ -27,7 +29,7 @@ public class PatientProgramEnrollmentConverter implements DataConverter {
 
 		List<PatientProgram> result = (List<PatientProgram>)baseResult.getValue();
 
-		List<String> programs = new ArrayList<String>();
+		Set<String> programs = new HashSet<String>();
 		for (PatientProgram p : result){
 			programs.add(p.getProgram().getName());
 		}
